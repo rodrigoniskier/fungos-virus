@@ -69,10 +69,10 @@
                     </div>
                 </div>
 
-                <!-- Passo 2: Simulação de Digitação -->
+                <!-- Passo 2: Visualização dos Dados -->
                 <div id="step-2" class="step-card hidden">
-                    <h2 class="text-2xl font-semibold mb-4 text-gray-200">2. Simulação de Entrada de Dados</h2>
-                    <p class="text-gray-400 mb-4">A tabela abaixo está vazia. Para simular a entrada, você pode preencher os campos. Clique em "Próxima" para continuar (os dados pré-compilados serão usados).</p>
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-200">2. Visualização dos Dados Brutos</h2>
+                    <p class="text-gray-400 mb-4">A tabela abaixo exibe os dados originais utilizados para a análise. Clique em "Próxima" para continuar.</p>
                     <div class="h-80 overflow-auto border border-gray-600 rounded-lg p-2 bg-gray-900/50">
                         <table id="data-table" class="min-w-full text-sm text-left">
                             <thead class="bg-gray-700 sticky top-0"></thead>
@@ -81,25 +81,25 @@
                     </div>
                 </div>
 
-                <!-- Passo 3: Análise Interativa -->
+                <!-- Passo 3: Análise Descritiva -->
                 <div id="step-3" class="step-card hidden">
-                    <h2 class="text-2xl font-semibold mb-4 text-gray-200">3. Análise de Dados e Gráficos</h2>
-                    <p class="text-gray-400 mb-6">Selecione uma variável na lista à esquerda para visualizar o gráfico correspondente à direita.</p>
+                    <h2 class="text-2xl font-semibold mb-4 text-gray-200">3. Análise Descritiva dos Dados</h2>
+                    <p class="text-gray-400 mb-6">Selecione uma variável na lista à esquerda para visualizar as métricas de tendência central à direita.</p>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 min-h-[400px]">
                         <div id="variable-buttons" class="flex flex-col gap-2 overflow-y-auto max-h-[400px] pr-2">
                             <!-- Botões das variáveis -->
                         </div>
-                        <div class="md:col-span-2 bg-gray-900/50 p-4 rounded-lg border border-gray-700 flex items-center justify-center">
-                            <canvas id="variableChart"></canvas>
+                        <div id="metrics-display-container" class="md:col-span-2 bg-gray-900/50 p-6 rounded-lg border border-gray-700 flex flex-col justify-center">
+                           <!-- As métricas serão exibidas aqui -->
                         </div>
                     </div>
                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
                         <div>
-                            <label for="observations" class="block mb-2 text-sm font-medium text-gray-300">Observações sobre os Dados (um tópico por linha):</label>
-                            <textarea id="observations" rows="4" class="block p-2.5 w-full text-sm bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-cyan-500 focus:border-cyan-500" placeholder="Ex: A maioria dos pacientes era do sexo feminino.&#10;A febre foi um sintoma universal.&#10;..."></textarea>
+                            <label for="observations" class="block mb-2 text-sm font-medium text-gray-300">Observações sobre os Dados:</label>
+                            <textarea id="observations" rows="4" class="block p-2.5 w-full text-sm bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-cyan-500 focus:border-cyan-500" placeholder="Digite suas observações aqui..."></textarea>
                         </div>
                         <div>
-                            <label for="conclusion" class="block mb-2 text-sm font-medium text-gray-300">Conclusão Epidemiológica (um tópico por linha):</label>
+                            <label for="conclusion" class="block mb-2 text-sm font-medium text-gray-300">Conclusão Epidemiológica:</label>
                             <textarea id="conclusion" rows="4" class="block p-2.5 w-full text-sm bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-cyan-500 focus:border-cyan-500" placeholder="Digite sua conclusão aqui..."></textarea>
                         </div>
                     </div>
@@ -143,8 +143,6 @@ const state = {
         authors: ''
     },
     data: {},
-    charts: {},
-    chartTypeIndex: 0
 };
 
 const infectionData = {
@@ -171,9 +169,9 @@ const infectionData = {
 19,F,29,Sim,Sim,Sim,Não,Sim,Não,Não,Não,Não,Sim
 20,M,61,Sim,Sim,Sim,Sim,Sim,Sim,Sim,Sim,Sim,Sim`,
         info: {
-            introduction: `<ul><li><span class="icon">🦟</span><strong>Agente e Vetor:</strong> A dengue é uma arbovirose causada pelo vírus da Dengue (DENV), um Flavivirus, transmitido principalmente pela picada da fêmea do mosquito <em>Aedes aegypti</em>.</li><li><span class="icon">🔢</span><strong>Complexidade Sorotípica:</strong> Existem quatro sorotipos distintos (DENV-1, 2, 3 e 4). A infecção por um sorotipo confere imunidade permanente contra ele, mas apenas proteção temporária e parcial contra os outros.</li><li><span class="icon">📜</span><strong>Material Genético:</strong> O genoma viral é constituído por RNA de fita simples e sentido positivo, que codifica três proteínas estruturais e sete não estruturais, essenciais para a replicação e patogênese.</li></ul>`,
-            medicalImportance: `<ul><li><span class="icon">🌍</span><strong>Problema de Saúde Global:</strong> A OMS estima que centenas de milhões de infecções ocorram anualmente, colocando quase metade da população mundial em risco, especialmente em áreas tropicais e subtropicais.</li><li><span class="icon">🌡️</span><strong>Espectro Clínico Amplo:</strong> A doença varia desde formas assintomáticas ou leves (Dengue Clássica) até quadros graves com extravasamento de plasma, hemorragias e choque (Dengue Grave), podendo levar à morte.</li><li><span class="icon">⚠️</span><strong>Infecção Sequencial:</strong> A principal teoria para a ocorrência de casos graves é a infecção secundária por um sorotipo diferente, através do mecanismo de Amplificação Dependente de Anticorpos (ADE), que exacerba a resposta imune.</li></ul>`,
-            clinicalPerspective: `<ul><li><span class="icon">💧</span><strong>Manejo Clínico:</strong> Focado no suporte hídrico e reconhecimento precoce dos sinais de alarme.</li><li><span class="icon">🚫</span><strong>Controle Epidemiológico:</strong> Baseado no combate ao vetor <em>Aedes aegypti</em> e na vigilância ativa.</li><li><span class="icon">💉</span><strong>Prevenção:</strong> Vacinas já estão disponíveis e são uma ferramenta importante para o controle.</li></ul>`
+            introduction: `<ul><li><strong>Família:</strong> Flaviviridae</li><li><strong>Gênero:</strong> Flavivirus</li><li><strong>Espécie:</strong> Vírus da Dengue (DENV)</li><li><strong>Genoma:</strong> RNA de fita simples, sentido positivo.</li><li><strong>Morfologia:</strong> Partícula esférica, envelopada, com aproximadamente 50 nm de diâmetro.</li><li><strong>Sorotipos:</strong> Quatro sorotipos antigênicamente distintos (DENV-1, DENV-2, DENV-3, DENV-4), o que torna a resposta imune complexa.</li></ul>`,
+            medicalImportance: `<ul><li><strong>Impacto Global:</strong> Uma das arboviroses de maior impacto no mundo, endêmica em mais de 100 países.</li><li><strong>Espectro Clínico:</strong> Varia de quadros febris leves a formas graves como a Dengue Hemorrágica e a Síndrome do Choque da Dengue.</li><li><strong>Fator de Risco:</strong> A infecção secundária por um sorotipo diferente aumenta o risco de desenvolver formas graves da doença.</li></ul>`,
+            clinicalPerspective: `<ul><li><strong>Manejo Clínico:</strong> Focado no suporte hídrico e reconhecimento precoce dos sinais de alarme (dor abdominal, sangramentos, etc.).</li><li><strong>Controle Epidemiológico:</strong> Baseado no combate ao vetor <em>Aedes aegypti</em> e na vigilância ativa de casos.</li><li><strong>Prevenção:</strong> Vacinas já estão disponíveis e são uma ferramenta importante para o controle em áreas endêmicas.</li></ul>`
         }
     },
     'Herpes': {
@@ -199,9 +197,9 @@ const infectionData = {
 19,F,30,HSV-2,Sim,Genital,Sim,Não,Não,Sim
 20,M,41,HSV-1,Sim,Oral,Sim,Não,Sim,Sim`,
         info: {
-            introduction: `<ul><li><span class="icon">🧬</span><strong>Agente Etiológico:</strong> Infecção causada pelo Vírus Herpes Simples (HSV), um vírus de DNA da família Herpesviridae. Existem dois tipos principais: HSV-1, associado classicamente a lesões orais, e HSV-2, a lesões genitais.</li><li><span class="icon">🔄</span><strong>Ciclo de Infecção:</strong> A característica marcante do HSV é sua capacidade de estabelecer uma infecção latente em gânglios neurais após a infecção primária. O vírus pode ser reativado periodicamente, causando lesões recorrentes.</li><li><span class="icon">🤝</span><strong>Transmissão:</strong> Ocorre por contato direto com as lesões vesiculares ou com secreções contaminadas (saliva, secreções genitais), mesmo na ausência de lesões visíveis (disseminação assintomática).</li></ul>`,
-            medicalImportance: `<ul><li><span class="icon">🌍</span><strong>Alta Prevalência:</strong> As infecções por HSV estão entre as mais comuns na população mundial. A OMS estima que bilhões de pessoas vivam com HSV-1 ou HSV-2.</li><li><span class="icon">🧠</span><strong>Complicações Graves:</strong> Embora geralmente cause lesões mucocutâneas benignas, o HSV pode levar a complicações sérias, como ceratite herpética (infecção da córnea), herpes neonatal (infecção grave no recém-nascido) e encefalite herpética, a causa mais comum de encefalite viral esporádica fatal.</li><li><span class="icon">👥</span><strong>Impacto em Imunocomprometidos:</strong> Em indivíduos com sistema imune debilitado (ex: HIV/AIDS, transplantados), as infecções por HSV podem ser mais frequentes, extensas, atípicas e graves, com maior risco de disseminação visceral.</li></ul>`,
-            clinicalPerspective: `<ul><li><span class="icon">💊</span><strong>Tratamento:</strong> Antivirais (ex: Aciclovir) reduzem a duração e a gravidade dos surtos, mas não curam a infecção.</li><li><span class="icon">🛡️</span><strong>Prevenção:</strong> Focada na educação sobre transmissão e práticas sexuais seguras.</li><li><span class="icon">👥</span><strong>Populações de Risco:</strong> Pacientes imunocomprometidos podem apresentar quadros mais graves.</li></ul>`
+            introduction: `<ul><li><strong>Família:</strong> Herpesviridae</li><li><strong>Subfamília:</strong> Alphaherpesvirinae</li><li><strong>Gênero:</strong> Simplexvirus</li><li><strong>Genoma:</strong> DNA de fita dupla, linear.</li><li><strong>Morfologia:</strong> Vírus grande, envelopado, com um capsídeo icosaédrico.</li><li><strong>Tipos Principais:</strong> Herpes Simplex Virus 1 (HSV-1), classicamente oral, e Herpes Simplex Virus 2 (HSV-2), classicamente genital.</li></ul>`,
+            medicalImportance: `<ul><li><strong>Prevalência:</strong> Infecções extremamente comuns e disseminadas globalmente.</li><li><strong>Latência e Recorrência:</strong> Caracteriza-se por establecer infecção latente nos gânglios neurais, com reativações periódicas.</li><li><strong>Complicações:</strong> Embora geralmente benignas, podem causar quadros graves como encefalite, ceratite e infecções neonatais de alta mortalidade.</li></ul>`,
+            clinicalPerspective: `<ul><li><strong>Tratamento:</strong> Antivirais (ex: Aciclovir) reduzem a duração e a gravidade dos surtos, mas não curam a infecção.</li><li><strong>Prevenção:</strong> Focada na educação sobre transmissão (contato direto com lesões) e práticas sexuais seguras.</li><li><strong>Populações de Risco:</strong> Pacientes imunocomprometidos podem apresentar quadros atípicos, extensos e mais graves.</li></ul>`
         }
     },
     'Hepatite B': {
@@ -227,9 +225,9 @@ const infectionData = {
 19,M,54,Crônica,Não,Sim,Não,Não,Pos,Neg,Pos,Neg,Alta,Sim
 20,F,31,Aguda,Sim,Sim,Sim,Sim,Pos,Pos,Pos,Pos,Alta,Sim`,
         info: {
-            introduction: `<ul><li><span class="icon">🧬</span><strong>Agente Etiológico:</strong> O vírus da Hepatite B (HBV) é um vírus de DNA da família Hepadnaviridae, que infecta primariamente os hepatócitos.</li><li><span class="icon">🩸</span><strong>Formas de Transmissão:</strong> A transmissão ocorre pelo contato com sangue ou fluidos corporais infectados, principalmente por via sexual, parenteral (compartilhamento de agulhas, transfusões) e vertical (de mãe para filho durante o parto).</li><li><span class="icon">⏳</span><strong>Evolução da Infecção:</strong> A infecção pode ser aguda e autolimitada (resolvida pelo sistema imune) ou evoluir para uma infecção crônica, que persiste por toda a vida se não tratada.</li></ul>`,
-            medicalImportance: `<ul><li><span class="icon">🩺</span><strong>Principal Causa de Doença Hepática:</strong> A infecção crônica pelo HBV é uma das principais causas de doença hepática crônica no mundo, sendo responsável por uma alta proporção dos casos de cirrose e carcinoma hepatocelular (câncer de fígado).</li><li><span class="icon">🌍</span><strong>Endemicidade:</strong> A doença é um grave problema de saúde pública, com mais de 250 milhões de pessoas vivendo com a infecção crônica globalmente, resultando em quase 1 milhão de mortes anuais.</li><li><span class="icon">💉</span><strong>Prevenção Eficaz:</strong> A existência de uma vacina segura e altamente eficaz torna a hepatite B uma doença prevenível. A vacinação universal de recém-nascidos é a estratégia mais importante para o controle da doença.</li></ul>`,
-            clinicalPerspective: `<ul><li><span class="icon">💉</span><strong>Prevenção:</strong> A vacinação é a medida mais eficaz e segura para prevenir a infecção.</li><li><span class="icon">💊</span><strong>Tratamento:</strong> Para a forma crônica, visa suprimir a replicação viral e prevenir a progressão da doença.</li><li><span class="icon">🔬</span><strong>Diagnóstico:</strong> Realizado por meio de marcadores sorológicos que definem o estágio da infecção.</li></ul>`
+            introduction: `<ul><li><strong>Família:</strong> Hepadnaviridae</li><li><strong>Gênero:</strong> Orthohepadnavirus</li><li><strong>Espécie:</strong> Vírus da Hepatite B (HBV)</li><li><strong>Genoma:</strong> DNA circular, parcialmente de fita dupla.</li><li><strong>Morfologia:</strong> Partícula viral complexa (Partícula de Dane), com antígenos de superfície (HBsAg), core (HBcAg) e "e" (HBeAg).</li></ul>`,
+            medicalImportance: `<ul><li><strong>Saúde Pública:</strong> Um dos maiores problemas de saúde globais, com milhões de portadores crônicos.</li><li><strong>Doença Crônica:</strong> A principal causa de cirrose hepática e carcinoma hepatocelular em todo o mundo.</li><li><strong>Transmissão:</strong> Ocorre por vias parenteral (sangue), sexual e vertical (mãe-filho).</li></ul>`,
+            clinicalPerspective: `<ul><li><strong>Prevenção:</strong> A vacinação é a medida mais eficaz e segura para prevenir a infecção.</li><li><strong>Tratamento:</strong> Para a forma crônica, visa suprimir a replicação viral, reduzir a inflamação hepática e prevenir a progressão da doença.</li><li><strong>Diagnóstico:</strong> Realizado por meio de marcadores sorológicos que definem o estágio da infecção (aguda, crônica, curada).</li></ul>`
         }
     },
     'Influenza': {
@@ -255,9 +253,9 @@ const infectionData = {
 19,F,50,Sim,Sim,Não,Sim,Sim,Não,HAS,Não,Sim
 20,M,74,Sim,Sim,Sim,Sim,Sim,Sim,HAS/DM,Sim,Sim`,
         info: {
-            introduction: `<ul><li><span class="icon">🦠</span><strong>Agente Etiológico:</strong> O vírus Influenza, da família Orthomyxoviridae, é o causador da gripe, uma infecção respiratória aguda.</li><li><span class="icon">📜</span><strong>Genoma Segmentado:</strong> Seu genoma de RNA é dividido em 8 segmentos, o que confere ao vírus uma alta capacidade de mutação (<em>antigenic drift</em>) e rearranjo genético (<em>antigenic shift</em>).</li><li><span class="icon"> Proteins de Superfície:</span> As principais proteínas de superfície são a Hemaglutinina (HA), que se liga às células hospedeiras, e a Neuraminidase (NA), que libera novas partículas virais. Elas definem os subtipos virais (ex: H1N1, H3N2).</li></ul>`,
-            medicalImportance: `<ul><li><span class="icon">🍂</span><strong>Impacto Sazonal:</strong> A gripe causa epidemias anuais que resultam em milhões de casos, centenas de milhares de hospitalizações e dezenas de milhares de mortes em todo o mundo, sobrecarregando os sistemas de saúde.</li><li><span class="icon">🌍</span><strong>Potencial Pandêmico:</strong> O rearranjo genético (<em>shift</em>) entre vírus de influenza de diferentes espécies (ex: aviária, suína) pode criar um subtipo viral completamente novo, contra o qual a população não tem imunidade, podendo desencadear uma pandemia com alta mortalidade.</li><li><span class="icon">👥</span><strong>Grupos de Alto Risco:</strong> A infecção é particularmente perigosa para idosos, crianças muito pequenas, gestantes e indivíduos com doenças crônicas (cardíacas, pulmonares, diabetes), que têm maior risco de desenvolver complicações graves como a pneumonia.</li></ul>`,
-            clinicalPerspective: `<ul><li><span class="icon">💉</span><strong>Prevenção:</strong> A vacinação anual é a principal estratégia de controle.</li><li><span class="icon">💊</span><strong>Tratamento:</strong> Antivirais podem ser usados, principalmente em casos graves.</li><li><span class="icon">📡</span><strong>Vigilância:</strong> A vigilância global é fundamental para monitorar a evolução do vírus.</li></ul>`
+            introduction: `<ul><li><strong>Família:</strong> Orthomyxoviridae</li><li><strong>Gênero:</strong> Influenzavirus</li><li><strong>Genoma:</strong> RNA de fita simples, segmentado (8 segmentos).</li><li><strong>Morfologia:</strong> Vírus envelopado com duas glicoproteínas de superfície principais: Hemaglutinina (HA) e Neuraminidase (NA).</li><li><strong>Variabilidade:</strong> A natureza segmentada do genoma permite alta taxa de mutação (drift) e rearranjo genético (shift), causando epidemias e pandemias.</li></ul>`,
+            medicalImportance: `<ul><li><strong>Sazonalidade:</strong> Causa epidemias anuais com impacto significativo na saúde pública e na economia.</li><li><strong>Pandemias:</strong> O rearranjo de genes entre vírus de diferentes espécies pode originar novas cepas pandêmicas com alta virulência.</li><li><strong>Grupos de Risco:</strong> A infecção pode ser grave e fatal em idosos, crianças, gestantes e pessoas com comorbidades.</li></ul>`,
+            clinicalPerspective: `<ul><li><strong>Prevenção:</strong> A vacinação anual é a principal estratégia de controle, atualizada para as cepas circulantes.</li><li><strong>Tratamento:</strong> Antivirais (inibidores da neuraminidase) podem ser usados, principalmente em casos graves ou em grupos de risco.</li><li><strong>Vigilância:</strong> A vigilância epidemiológica e virológica global é fundamental para monitorar a evolução do vírus.</li></ul>`
         }
     },
     'Candidíase': {
@@ -283,9 +281,9 @@ const infectionData = {
 19,F,47,Sim,Sim,Não,Não,Não,Sim,Sim
 20,M,55,Não,Não,Sim,Não,Sim,Sim,Sim`,
         info: {
-            introduction: `<ul><li><span class="icon">🍄</span><strong>Agente Comensal:</strong> A candidíase é uma infecção fúngica causada por leveduras do gênero <em>Candida</em>, sendo a <em>Candida albicans</em> a espécie mais comum. Este fungo é um habitante natural da pele, boca, trato gastrointestinal e genital.</li><li><span class="icon">⚖️</span><strong>Quebra de Equilíbrio:</strong> A doença manifesta-se quando ocorre um desequilíbrio na microbiota local ou uma queda na imunidade do hospedeiro, permitindo que a levedura se prolifere de forma descontrolada e mude de sua forma comensal para uma forma filamentosa invasiva.</li><li><span class="icon">📈</span><strong>Fatores Predisponentes:</strong> Condições como diabetes mellitus, uso de antibióticos de amplo espectro, terapia com corticosteroides, gravidez e imunodeficiências (como HIV) são fatores de risco conhecidos.</li></ul>`,
-            medicalImportance: `<ul><li><span class="icon">🌡️</span><strong>Amplo Espectro de Doenças:</strong> A candidíase pode variar desde infecções superficiais e localizadas, como a candidíase oral ("sapinho") e vulvovaginal, que são extremamente comuns, até formas invasivas graves.</li><li><span class="icon">🩸</span><strong>Candidíase Invasiva:</strong> Em pacientes hospitalizados, críticos ou imunocomprometidos, a <em>Candida</em> pode entrar na corrente sanguínea (candidemia) e se disseminar para órgãos vitais como coração, cérebro e olhos, resultando em uma condição com alta taxa de mortalidade.</li><li><span class="icon">🏥</span><strong>Infecção Hospitalar:</strong> As espécies de <em>Candida</em> são uma causa importante de infecções hospitalares, especialmente em unidades de terapia intensiva, associadas ao uso de cateteres venosos centrais e outros procedimentos invasivos.</li></ul>`,
-            clinicalPerspective: `<ul><li><span class="icon">🔬</span><strong>Diagnóstico:</strong> Clínico, confirmado por exame micológico.</li><li><span class="icon">💊</span><strong>Tratamento:</strong> Antifúngicos tópicos ou sistêmicos.</li><li><span class="icon">🛡️</span><strong>Controle:</strong> Manejo dos fatores de risco é crucial para prevenir a doença e suas recorrências.</li></ul>`
+            introduction: `<ul><li><strong>Reino:</strong> Fungi</li><li><strong>Gênero:</strong> Candida</li><li><strong>Espécie Principal:</strong> <em>Candida albicans</em>.</li><li><strong>Morfologia:</strong> Levedura dimórfica, pode existir como blastoconídios (forma comensal) ou hifas/pseudo-hifas (forma invasiva).</li><li><strong>Comensalismo:</strong> Faz parte da microbiota normal da pele, trato gastrointestinal e geniturinário.</li></ul>`,
+            medicalImportance: `<ul><li><strong>Infecção Oportunista:</strong> Causa doença quando há um desequilíbrio na microbiota ou imunossupressão do hospedeiro.</li><li><strong>Espectro:</strong> Varia de infecções superficiais (candidíase oral, vulvovaginal) a infecções sistêmicas (candidemia) com alta mortalidade.</li><li><strong>Fatores de Risco:</strong> Diabetes, uso de antibióticos, corticoides, cateteres e imunodeficiências (ex: HIV/AIDS).</li></ul>`,
+            clinicalPerspective: `<ul><li><strong>Diagnóstico:</strong> Clínico, confirmado por exame micológico direto ou cultura.</li><li><strong>Tratamento:</strong> Antifúngicos tópicos ou sistêmicos, dependendo da localização e gravidade da infecção.</li><li><strong>Controle:</strong> Manejo dos fatores de risco é crucial para prevenir a doença e suas recorrências.</li></ul>`
         }
     },
     'Esporotricose': {
@@ -311,9 +309,9 @@ const infectionData = {
 19,M,65,Aposentado (horta),Sim,Sim,Não,Não,Não,Sim
 20,M,40,HIV+,Sim,Sim,Sim,Não,Sim,Sim`,
         info: {
-            introduction: `<ul><li><span class="icon">🍄</span><strong>Fungo Dimórfico:</strong> A esporotricose é uma micose causada pelo fungo dimórfico do complexo <em>Sporothrix schenckii</em>. Ele existe como mofo no ambiente (solo, plantas) e como levedura nos tecidos de hospedeiros de sangue quente.</li><li><span class="icon">🩹</span><strong>Via de Infecção:</strong> A transmissão clássica ocorre por inoculação traumática do fungo na pele, através de arranhões ou perfurações com espinhos, farpas ou vegetação contaminada (a "doença do jardineiro").</li><li><span class="icon">🐾</span><strong>Transmissão Zoonótica:</strong> No Brasil, a doença emergiu como uma importante zoonose, sendo a transmissão por arranhões e mordidas de gatos infectados a principal via de infecção humana e animal.</li></ul>`,
-            medicalImportance: `<ul><li><span class="icon">📈</span><strong>Zoonose Emergente:</strong> O Brasil enfrenta a maior epidemia de esporotricose transmitida por gatos já registrada no mundo, transformando uma doença rural em um grave problema de saúde pública urbana.</li><li><span class="icon">🌡️</span><strong>Forma Linfocutânea:</strong> A apresentação clínica mais comum é a forma linfocutânea, caracterizada por uma lesão inicial no local da inoculação que se dissemina ao longo dos vasos linfáticos, formando nódulos secundários.</li><li><span class="icon">⚠️</span><strong>Risco em Imunocomprometidos:</strong> Embora rara, a forma disseminada pode ocorrer, especialmente em pacientes com imunodeficiência (como HIV/AIDS), afetando múltiplos órgãos e apresentando alta morbimortalidade.</li></ul>`,
-            clinicalPerspective: `<ul><li><span class="icon">🔬</span><strong>Diagnóstico:</strong> Isolamento do fungo em cultura é o padrão-ouro.</li><li><span class="icon">💊</span><strong>Tratamento:</strong> Itraconazol é a primeira escolha.</li><li><span class="icon">🌍</span><strong>Saúde Única:</strong> O controle exige uma abordagem integrada (saúde humana, animal e ambiental).</li></ul>`
+            introduction: `<ul><li><strong>Reino:</strong> Fungi</li><li><strong>Gênero:</strong> <em>Sporothrix</em></li><li><strong>Morfologia:</strong> Fungo dimórfico, apresentando-se como mofo no ambiente (25°C) e levedura nos tecidos do hospedeiro (37°C).</li><li><strong>Transmissão:</strong> Inoculação traumática na pele a partir de solo, plantas ou matéria orgânica contaminada. Recentemente, a transmissão zoonótica por gatos se tornou a principal via no Brasil.</li></ul>`,
+            medicalImportance: `<ul><li><strong>Micose Subcutânea:</strong> É a micose de implantação mais comum na América Latina.</li><li><strong>Zoonose Emergente:</strong> A epidemia de esporotricose felina no Brasil transformou o perfil epidemiológico da doença, que agora é um problema de saúde pública urbana.</li><li><strong>Formas Clínicas:</strong> A mais comum é a linfocutânea, mas formas disseminadas podem ocorrer em imunocomprometidos.</li></ul>`,
+            clinicalPerspective: `<ul><li><strong>Diagnóstico:</strong> Isolamento do fungo em cultura é o padrão-ouro.</li><li><strong>Tratamento:</strong> Itraconazol é o tratamento de escolha para as formas cutâneas. Anfotericina B é usada em casos graves.</li><li><strong>Saúde Única:</strong> O controle da epidemia exige uma abordagem integrada entre a saúde humana, animal e ambiental.</li></ul>`
         }
     },
     'Histoplasmose': {
@@ -339,9 +337,9 @@ const infectionData = {
 19,M,61,Sim,Sim,Sim,Sim,Sim,Sim,Sim,Sim,Sim,Sim
 20,M,36,Sim,Sim,Sim,Sim,Sim,Sim,Sim,Sim,Sim,Sim`,
         info: {
-            introduction: `<ul><li><span class="icon">🍄</span><strong>Fungo de Ambiente:</strong> A histoplasmose é uma micose sistêmica causada pelo fungo dimórfico <em>Histoplasma capsulatum</em>.</li><li><span class="icon">🦇</span><strong>Habitat Característico:</strong> O fungo se desenvolve no solo, especialmente em locais ricos em excrementos de aves e morcegos, como cavernas, galinheiros, e sótãos de prédios antigos.</li><li><span class="icon">🌬️</span><strong>Transmissão por Inalação:</strong> A infecção ocorre pela inalação dos microconídios (esporos) do fungo, que se convertem em leveduras nos pulmões após serem fagocitados por macrófagos.</li></ul>`,
-            medicalImportance: `<ul><li><span class="icon">🌍</span><strong>Micose Endêmica:</strong> É uma das micoses sistêmicas endêmicas mais comuns em certas regiões das Américas, incluindo o vale dos rios Ohio e Mississippi nos EUA e partes da América Latina.</li><li><span class="icon"> asymptomatic</span><strong>Infecção Assintomática:</strong> A grande maioria (mais de 90%) das infecções em indivíduos imunocompetentes é assintomática ou causa apenas uma síndrome gripal leve e autolimitada.</li><li><span class="icon">⚠️</span><strong>Doença Grave em Imunocomprometidos:</strong> Em pacientes com imunidade celular deficiente, principalmente aqueles com AIDS em estágio avançado, a histoplasmose pode se manifestar como uma doença disseminada progressiva, que é grave e frequentemente fatal se não diagnosticada e tratada a tempo.</li></ul>`,
-            clinicalPerspective: `<ul><li><span class="icon">🔬</span><strong>Diagnóstico:</strong> Requer alta suspeita clínica e é confirmado por cultura, sorologia ou detecção de antígeno.</li><li><span class="icon">💊</span><strong>Tratamento:</strong> Formas moderadas a graves requerem tratamento com Itraconazol ou Anfotericina B.</li><li><span class="icon">🛡️</span><strong>Prevenção:</strong> Evitar a exposição em áreas de alto risco, especialmente para imunocomprometidos.</li></ul>`
+            introduction: `<ul><li><strong>Reino:</strong> Fungi</li><li><strong>Gênero:</strong> <em>Histoplasma</em></li><li><strong>Espécie:</strong> <em>Histoplasma capsulatum</em>.</li><li><strong>Morfologia:</strong> Fungo dimórfico térmico, encontrado como mofo no solo e levedura nos tecidos.</li><li><strong>Habitat:</strong> Solos ricos em excrementos de aves e morcegos, como cavernas, galinheiros e construções abandonadas.</li><li><strong>Transmissão:</strong> Inalação de microconídios.</li></ul>`,
+            medicalImportance: `<ul><li><strong>Micose Sistêmica:</strong> Uma das micoses endêmicas mais comuns no continente americano.</li><li><strong>Infecção Oportunista Grave:</strong> Em pacientes com imunodeficiência celular, como na AIDS, pode causar a forma disseminada progressiva, que é fatal se não tratada.</li><li><strong>Espectro Clínico:</strong> A maioria das infecções é assintomática; as formas sintomáticas podem ser pulmonares agudas, crônicas ou disseminadas.</li></ul>`,
+            clinicalPerspective: `<ul><li><strong>Diagnóstico:</strong> Requer alta suspeita clínica e é confirmado por cultura, sorologia ou detecção de antígeno.</li><li><strong>Tratamento:</strong> Formas leves podem ser autolimitadas. Formas moderadas a graves requerem tratamento com antifúngicos como Itraconazol ou Anfotericina B.</li><li><strong>Prevenção:</strong> Evitar a exposição em áreas de alto risco, especialmente para indivíduos imunocomprometidos.</li></ul>`
         }
     },
     'Pitiríase Versicolor': {
@@ -367,9 +365,9 @@ const infectionData = {
 19,M,22,II,Sim,Não,Sim,Sim,Sim,Sim
 20,F,35,III,Sim,Sim,Sim,Não,Sim,Sim`,
         info: {
-            introduction: `<ul><li><span class="icon">🍄</span><strong>Fungo da Pele:</strong> É uma micose superficial benigna causada por leveduras lipofílicas do gênero <em>Malassezia</em> (principalmente <em>M. furfur</em>).</li><li><span class="icon">🤝</span><strong>Flora Residente:</strong> Essas leveduras são componentes normais da microbiota da pele humana, especialmente em áreas ricas em glândulas sebáceas, como o tronco superior e o pescoço.</li><li><span class="icon">☀️</span><strong>Fatores Desencadeantes:</strong> A doença ocorre quando o fungo passa de sua forma de levedura comensal para uma forma filamentosa patogênica. Fatores como calor, umidade, sudorese e oleosidade da pele favorecem essa transição.</li></ul>`,
-            medicalImportance: `<ul><li><span class="icon">🎨</span><strong>Manifestação Clínica:</strong> Caracteriza-se por máculas (manchas) que podem ser mais claras (hipocrômicas) ou mais escuras (hipercrômicas) que a pele normal, com uma descamação fina. A alteração da cor ocorre devido à produção de ácido azelaico pelo fungo, que interfere na produção de melanina.</li><li><span class="icon">🌍</span><strong>Dermatose Universal:</strong> É uma das dermatoses mais comuns em todo o mundo, afetando pessoas de todas as idades, mas é mais prevalente em adolescentes e adultos jovens em climas quentes e úmidos.</li><li><span class="icon">✨</span><strong>Impacto Estético:</strong> Embora seja uma condição sem gravidade e não contagiosa, o principal impacto é estético, o que pode causar desconforto e preocupação para o paciente, levando-o a procurar tratamento. A recorrência é muito comum.</li></ul>`,
-            clinicalPerspective: `<ul><li><span class="icon">🔬</span><strong>Diagnóstico:</strong> Geralmente clínico, confirmado por exame micológico direto.</li><li><span class="icon">💊</span><strong>Tratamento:</strong> Tópico na maioria dos casos.</li><li><span class="icon">🔄</span><strong>Recorrência:</strong> É comum, pois o fungo é um habitante normal da pele.</li></ul>`
+            introduction: `<ul><li><strong>Reino:</strong> Fungi</li><li><strong>Gênero:</strong> <em>Malassezia</em></li><li><strong>Características:</strong> Leveduras lipofílicas que fazem parte da microbiota normal da pele humana.</li><li><strong>Patogênese:</strong> A doença ocorre quando a levedura comensal se converte em sua forma filamentosa patogênica.</li><li><strong>Fatores Predisponentes:</strong> Calor, umidade, sudorese excessiva e oleosidade da pele.</li></ul>`,
+            medicalImportance: `<ul><li><strong>Dermatose Comum:</strong> Uma das micoses superficiais mais frequentes em todo o mundo, especialmente em climas quentes.</li><li><strong>Clínica:</strong> Caracteriza-se por máculas discrômicas (hipo ou hiperpigmentadas), geralmente no tronco superior.</li><li><strong>Impacto:</strong> É uma condição benigna, mas o impacto estético pode ser significativo para o paciente, e as recidivas são comuns.</li></ul>`,
+            clinicalPerspective: `<ul><li><strong>Diagnóstico:</strong> Geralmente clínico, podendo ser confirmado por exame micológico direto (visualização de hifas e leveduras).</li><li><strong>Tratamento:</strong> Tópico na maioria dos casos, com antifúngicos em xampus ou cremes. Antifúngicos orais são reservados para casos extensos ou recorrentes.</li><li><strong>Recorrência:</strong> A educação do paciente sobre a natureza recorrente da doença é importante, pois o fungo é um habitante normal da pele.</li></ul>`
         }
     }
 };
@@ -472,7 +470,10 @@ function renderStep1() {
 }
 
 function renderStep2() {
-    const headers = infectionData[state.selectedInfection].rawData.split('\n')[0].split(',');
+    const rawData = infectionData[state.selectedInfection].rawData;
+    const headers = rawData.split('\n')[0].split(',').map(h => h.trim());
+    const parsedData = parseCSV(rawData);
+
     const tableHead = document.querySelector('#data-table thead');
     const tableBody = document.querySelector('#data-table tbody');
     tableHead.innerHTML = '';
@@ -481,23 +482,82 @@ function renderStep2() {
     const trHead = document.createElement('tr');
     headers.forEach(h => {
         const th = document.createElement('th');
-        th.textContent = h.trim();
+        th.textContent = h;
         th.className = 'p-2';
         trHead.appendChild(th);
     });
     tableHead.appendChild(trHead);
 
-    for (let i = 0; i < 20; i++) {
+    parsedData.forEach(rowData => {
         const trBody = document.createElement('tr');
         trBody.className = 'border-b border-gray-700 hover:bg-gray-700/50';
-        headers.forEach(() => {
+        headers.forEach(header => {
             const td = document.createElement('td');
             td.className = 'data-input-cell';
-            td.setAttribute('contenteditable', 'true');
+            td.textContent = rowData[header] || '';
             trBody.appendChild(td);
         });
         tableBody.appendChild(trBody);
+    });
+}
+
+function calculateAndRenderMetrics(variableName) {
+    const metricsDisplay = document.getElementById('metrics-display-container');
+    metricsDisplay.innerHTML = ''; // Clear previous metrics
+
+    const variableData = state.data.analysis[variableName];
+    if (!variableData) {
+        metricsDisplay.innerHTML = `<p class="text-gray-400">Dados não disponíveis para esta variável.</p>`;
+        return;
     }
+
+    const total = state.data.total;
+    const categories = Object.keys(variableData);
+
+    // Calculate Mode
+    let mode = '';
+    let maxCount = 0;
+    categories.forEach(cat => {
+        if (variableData[cat] > maxCount) {
+            maxCount = variableData[cat];
+            mode = cat;
+        }
+    });
+
+    let html = `<h3 class="text-2xl font-bold text-cyan-400 mb-6 text-center">${variableName}</h3>`;
+    html += `<div class="space-y-4">`;
+
+    // Display Mode
+    html += `
+        <div class="bg-gray-800 p-4 rounded-lg">
+            <p class="text-sm text-gray-400">Tendência Central (Moda)</p>
+            <p class="text-xs text-gray-500 mb-2">O valor que aparece com mais frequência.</p>
+            <p class="text-xl font-semibold text-white">${mode}</p>
+        </div>
+    `;
+
+    // Display Frequency Distribution
+    html += `<div class="bg-gray-800 p-4 rounded-lg">`;
+    html += `<p class="text-sm text-gray-400 mb-3">Distribuição de Frequência</p>`;
+    categories.forEach(cat => {
+        const count = variableData[cat];
+        const percentage = ((count / total) * 100).toFixed(1);
+        html += `
+            <div class="mb-3">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-white text-sm">${cat}</span>
+                    <span class="text-gray-300 font-mono text-xs">${count} / ${total} (${percentage}%)</span>
+                </div>
+                <div class="w-full bg-gray-700 rounded-full h-2">
+                    <div class="bg-cyan-500 h-2 rounded-full" style="width: ${percentage}%"></div>
+                </div>
+            </div>
+        `;
+    });
+    html += `</div>`;
+    html += `</div>`;
+
+    metricsDisplay.innerHTML = html;
 }
 
 function renderStep3() {
@@ -509,7 +569,8 @@ function renderStep3() {
     const buttonsContainer = document.getElementById('variable-buttons');
     buttonsContainer.innerHTML = '';
     
-    Object.keys(analysis).forEach((variable, index) => {
+    const variables = Object.keys(analysis);
+    variables.forEach((variable, index) => {
         const button = document.createElement('button');
         button.textContent = variable;
         button.dataset.variable = variable;
@@ -523,83 +584,18 @@ function renderStep3() {
             const variableName = e.target.dataset.variable;
             document.querySelectorAll('.variable-btn').forEach(btn => btn.classList.remove('active'));
             e.target.classList.add('active');
-            renderVariableChart(variableName);
+            calculateAndRenderMetrics(variableName);
         }
     });
 
-    renderVariableChart(Object.keys(analysis)[0]);
+    if (variables.length > 0) {
+        calculateAndRenderMetrics(variables[0]);
+    }
+    
     document.getElementById('observations').addEventListener('input', validateStep);
     document.getElementById('conclusion').addEventListener('input', validateStep);
 }
 
-function getChartConfig(variableName, variableData) {
-    const chartTypes = ['pie', 'bar', 'bar'];
-    const currentChartType = chartTypes[state.chartTypeIndex % chartTypes.length];
-    state.chartTypeIndex++;
-
-    const labels = Object.keys(variableData);
-    const data = Object.values(variableData);
-    const colors = {
-        pie: ['rgba(78, 205, 196, 0.8)', 'rgba(247, 184, 1, 0.8)', 'rgba(255, 107, 107, 0.8)', 'rgba(130, 88, 226, 0.8)'],
-        bar: 'rgba(78, 205, 196, 0.6)',
-        barBorder: 'rgba(78, 205, 196, 1)'
-    };
-    
-    const baseOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { display: currentChartType === 'pie', labels: { color: '#FFFFFF' } },
-            title: { display: true, text: variableName, color: '#FFFFFF', font: { size: 18 } }
-        }
-    };
-
-    if (currentChartType === 'pie') {
-        return {
-            type: 'pie',
-            data: {
-                labels: labels,
-                datasets: [{ data: data, backgroundColor: colors.pie, borderColor: '#2d3748', borderWidth: 2 }]
-            },
-            options: baseOptions
-        };
-    } else {
-        const isHorizontal = state.chartTypeIndex % 2 === 0;
-        return {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: colors.bar,
-                    borderColor: colors.barBorder,
-                    borderWidth: 1,
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                ...baseOptions,
-                indexAxis: isHorizontal ? 'y' : 'x',
-                 plugins: { ...baseOptions.plugins, legend: { display: false } },
-                scales: {
-                    x: { ticks: { color: '#9CA3AF' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
-                    y: { ticks: { color: '#9CA3AF' }, grid: { display: isHorizontal ? false : true, color: 'rgba(255, 255, 255, 0.1)' } }
-                }
-            }
-        };
-    }
-}
-
-function renderVariableChart(variableName) {
-    const variableData = state.data.analysis[variableName];
-    const ctx = document.getElementById('variableChart').getContext('2d');
-    
-    if (state.charts.variableChart) {
-        state.charts.variableChart.destroy();
-    }
-    const chartConfig = getChartConfig(variableName, variableData);
-    state.charts.variableChart = new Chart(ctx, chartConfig);
-}
 
 function renderStep4() {
     const layouts = {
@@ -635,40 +631,70 @@ function renderStep4() {
     validateStep();
 }
 
-async function generateAllChartImages() {
-    const chartImages = [];
-    const variables = Object.keys(state.data.analysis);
-    let tempChartIndex = 0; 
+function generateMetricsHTML(theme, variablesToShow) {
+    const total = state.data.total;
+    let metricsHtml = '';
 
-    for (const variable of variables) {
-        const originalIndex = state.chartTypeIndex;
-        state.chartTypeIndex = tempChartIndex;
-        
+    for (const variable of variablesToShow) {
         const variableData = state.data.analysis[variable];
-        const offscreenCanvas = document.createElement('canvas');
-        offscreenCanvas.width = 500;
-        offscreenCanvas.height = 400;
+        if (!variableData) continue;
+        const categories = Object.keys(variableData);
 
-        let config = getChartConfig(variable, variableData);
-        config.options.animation = { duration: 0 };
-        config.options.responsive = false;
-        config.options.maintainAspectRatio = false;
-
-        const chart = new Chart(offscreenCanvas.getContext('2d'), config);
-        
-        await new Promise(resolve => setTimeout(resolve, 100)); 
-
-        chartImages.push({
-            title: variable,
-            image: chart.toBase64Image()
+        let mode = '';
+        let maxCount = 0;
+        categories.forEach(cat => {
+            if (variableData[cat] > maxCount) {
+                maxCount = variableData[cat];
+                mode = cat;
+            }
         });
-        chart.destroy();
+        
+        let distributionHtml = '';
+        categories.forEach(cat => {
+             const count = variableData[cat];
+             const percentage = ((count / total) * 100).toFixed(1);
+             distributionHtml += `
+                <div style="margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 1.1em;">
+                        <span style="color: ${theme.text};">${cat}</span>
+                        <span style="color: ${theme.text}; opacity: 0.8;">${percentage}%</span>
+                    </div>
+                    <div style="width: 100%; background-color: rgba(0,0,0,0.2); border-radius: 5px; height: 10px;">
+                        <div style="background-color: ${theme.secondary}; height: 10px; border-radius: 5px; width: ${percentage}%;"></div>
+                    </div>
+                </div>
+             `;
+        });
 
-        tempChartIndex++;
-        state.chartTypeIndex = originalIndex;
+        metricsHtml += `
+            <div style="background-color: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px; text-align: left;">
+                <h4 style="margin: 0 0 20px 0; font-size: 1.4em; color: ${theme.text}; text-align: center; font-family: 'Poppins', sans-serif;">${variable}</h4>
+                <p style="font-size: 1.1em; opacity: 0.8; margin: 0;">Moda (Mais Frequente):</p>
+                <p style="font-size: 1.5em; font-weight: bold; color: ${theme.secondary}; margin: 5px 0 20px 0;">${mode}</p>
+                ${distributionHtml}
+            </div>
+        `;
     }
-    return chartImages;
+    return metricsHtml;
 }
+
+function generateTextCardSlides(title, icon, text, itemsPerSlide) {
+    let slidesHTML = '';
+    const items = text.split('\n').filter(item => item.trim() !== '');
+    if (items.length === 0) return '';
+
+    const itemChunks = [];
+    for (let i = 0; i < items.length; i += itemsPerSlide) {
+        itemChunks.push(items.slice(i, i + itemsPerSlide));
+    }
+
+    itemChunks.forEach(chunk => {
+        const cardHTML = `<div class="info-card"><ul>${chunk.map(item => `<li>${item}</li>`).join('')}</ul></div>`;
+        slidesHTML += `<section class="slide text-card-slide"><header></header><div class="slide-content"><h2>${icon} ${title}</h2><div>${cardHTML}</div></div><footer></footer></section>`;
+    });
+    return slidesHTML;
+}
+
 
 async function generatePresentation() {
     const { selectedInfection, analysis, presentation } = state;
@@ -677,8 +703,6 @@ async function generatePresentation() {
     document.getElementById('generate-btn').textContent = 'Gerando...';
     document.getElementById('generate-btn').disabled = true;
 
-    const chartImages = await generateAllChartImages();
-
     const colorSchemes = {
         teal: { primary: '#0D7377', secondary: '#4ECDC4', accent: '#F7B801', text: '#F7FFF7', textDark: '#1A535C' },
         amber: { primary: '#B45309', secondary: '#F59E0B', accent: '#65A30D', text: '#FFFBEB', textDark: '#78350F' },
@@ -686,90 +710,97 @@ async function generatePresentation() {
         rose: { primary: '#881337', secondary: '#F43F5E', accent: '#0891B2', text: '#FFF1F2', textDark: '#9F1239' }
     };
     const theme = colorSchemes[presentation.layout];
-
+    
     const icons = {
         introduction: '📖', medicalImportance: '⚕️', data: '📊',
         observations: '💡', conclusion: '📌', perspective: '🔭', thanks: '🙏'
     };
-    
-    // Helper para criar cards para observações e conclusão
-    const renderTopicsInCards = (text) => {
-        const topics = text.split('\n').filter(t => t.trim() !== '');
-        if (topics.length === 0) return '<blockquote>Nenhuma informação fornecida.</blockquote>';
 
-        let html = '';
-        for (let i = 0; i < topics.length; i += 3) {
-            const chunk = topics.slice(i, i + 3);
-            const listItems = chunk.map(item => `<li><span class="icon">🔹</span>${item}</li>`).join('');
-            html += `<div class="topic-card"><ul>${listItems}</ul></div>`;
-        }
-        return `<div class="topics-container">${html}</div>`;
-    };
+    const variables = Object.keys(state.data.analysis);
+    const variableChunks = [];
+    for (let i = 0; i < variables.length; i += 2) {
+        variableChunks.push(variables.slice(i, i + 2));
+    }
 
-    const observationsHTML = renderTopicsInCards(analysis.observations);
-    const conclusionHTML = renderTopicsInCards(analysis.conclusion);
+    let metricsSlidesHTML = '';
+    variableChunks.forEach(chunk => {
+        const metricsContentHTML = generateMetricsHTML(theme, chunk);
+        metricsSlidesHTML += `<section class="slide"><header></header><div class="slide-content"><h2>${icons.data} Análise Descritiva</h2><div class="grid-metrics">${metricsContentHTML}</div></div><footer></footer></section>`;
+    });
 
-    const chartsHTML = chartImages.map(chart => `
-        <div>
-            <h4 style="margin: 0 0 10px 0; font-size: 1.1em; color: ${theme.secondary}; text-align: center; font-family: 'Poppins', sans-serif;">${chart.title}</h4>
-            <img src="${chart.image}" alt="Gráfico de ${chart.title}" style="max-width: 100%; height: auto; border-radius: 4px; background: rgba(0,0,0,0.15); padding: 5px;">
-        </div>`).join('');
+    const observationsSlidesHTML = generateTextCardSlides('Observações', icons.observations, analysis.observations, 3);
+    const conclusionSlidesHTML = generateTextCardSlides('Conclusão', icons.conclusion, analysis.conclusion, 3);
 
     const slidesHTML = `
         <!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Apresentação: ${selectedInfection}</title>
         <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
         <style>
-            :root { --p: ${theme.primary}; --s: ${theme.secondary}; --a: ${theme.accent}; --t: ${theme.text}; }
-            body { 
-                font-family: 'Lato', sans-serif; 
-                background-color: var(--p);
-                background-image: linear-gradient(160deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.05) 40%, rgba(0,0,0,0.05) 60%, rgba(0,0,0,0.3) 100%), linear-gradient(to top, rgba(255,255,255,0.2), transparent 50%);
-                color: var(--t); 
-                margin: 0; 
-                overflow: hidden; 
-            }
+            :root { --p: ${theme.primary}; --s: ${theme.secondary}; --a: ${theme.accent}; --t: ${theme.text}; --td: ${theme.textDark}; }
+            body { font-family: 'Lato', sans-serif; background-color: var(--p); color: var(--t); margin: 0; overflow: hidden; }
             .slide { box-sizing: border-box; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px 60px; height: 100vh; width: 100%; position: absolute; top: 0; left: 0; opacity: 0; transform: scale(0.95); visibility: hidden; transition: opacity 0.6s ease, transform 0.6s ease, visibility 0.6s; }
             .slide.active { display: flex; opacity: 1; transform: scale(1); visibility: visible; }
             .slide-content { max-width: 1200px; width: 100%; animation: fadeIn 1s ease-out 0.3s both; }
-            header { position: absolute; top: 20px; left: 20px; right: 20px; font-size: 1.6em; text-align: left; border-bottom: 1px solid var(--s); padding-bottom: 10px; opacity: 0.7; }
-            header p { margin: 2px 0; color: var(--t); line-height: 1.2; }
-            footer { position: absolute; bottom: 20px; right: 20px; font-size: 0.9em; color: var(--t); opacity: 0.7; }
-            h1 { font-family: 'Poppins', sans-serif; font-size: clamp(3.8rem, 8vw, 6rem); letter-spacing: -1px; font-weight: 800; color: white; text-shadow: 2px 2px 15px rgba(0,0,0,0.3); margin: 0; }
-            h2 { font-family: 'Poppins', sans-serif; font-size: clamp(2rem, 3.5vw, 2.8rem); color: white; border-bottom: 3px solid var(--s); padding-bottom: 12px; margin-bottom: 25px; font-weight: 700; display: inline-flex; align-items: center; gap: 15px; }
-            h3 { font-family: 'Poppins', sans-serif; font-size: 1.5em; color: var(--s); margin-bottom: 25px; font-weight: 600; }
+            header { position: absolute; top: 20px; left: 20px; right: 20px; font-size: 1em; text-align: left; border-bottom: 1px solid var(--s); padding-bottom: 12px; opacity: 0.7; }
+            header p { margin: 2px 0; color: var(--t); }
+            footer { position: absolute; bottom: 20px; right: 20px; font-size: 1.1em; color: var(--t); opacity: 0.7; }
+            h1 { font-family: 'Poppins', sans-serif; font-size: clamp(3.5rem, 8vw, 5.5rem); letter-spacing: -1px; font-weight: 800; color: white; text-shadow: 2px 2px 15px rgba(0,0,0,0.3); margin: 0; }
+            h2 { font-family: 'Poppins', sans-serif; font-size: clamp(2.5rem, 4.5vw, 3.5rem); color: white; border-bottom: 3px solid var(--s); padding-bottom: 15px; margin-bottom: 30px; font-weight: 700; display: inline-flex; align-items: center; gap: 20px; }
+            h3 { font-family: 'Poppins', sans-serif; font-size: 1.8em; color: var(--s); margin-bottom: 30px; font-weight: 600; }
             ul { list-style: none; padding: 0; text-align: left; max-width: 900px; margin: 0 auto;}
-            ul li { display: flex; align-items: flex-start; font-size: clamp(1.25rem, 2.2vw, 1.5rem); line-height: 1.7; color: #e2e8f0; margin-bottom: 15px; }
+            ul li { font-size: clamp(1.2rem, 2.2vw, 1.5rem); line-height: 1.7; color: #e2e8f0; margin-bottom: 12px; }
             ul li strong { color: var(--s); }
-            ul li .icon { margin-right: 12px; font-size: 1.1em; line-height: 1.6; }
-            .topics-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; width: 100%; }
-            .topic-card { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px 25px; text-align: left; flex: 1 1 300px; max-width: 450px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1); }
-            .topic-card ul { padding-left: 0; }
-            .topic-card li { font-size: clamp(1.1rem, 1.8vw, 1.3rem); line-height: 1.6; color: #e2e8f0; margin-bottom: 10px; }
-            .nav-btn { position: fixed; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 10px; font-size: 24px; cursor: pointer; z-index: 100; border-radius: 50%; width: 50px; height: 50px; backdrop-filter: blur(5px); transition: all 0.2s ease; }
-            .nav-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-50%) scale(1.1); }
-            #prevSlide { left: 20px; }
-            #nextSlide { right: 20px; }
-            .grid-charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; width: 100%; max-height: 70vh; overflow-y: auto; padding: 10px; }
+            .grid-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; width: 100%; }
             @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+            .info-card { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 25px; margin: 0 auto 25px auto; border-left: 6px solid var(--s); text-align: left; max-width: 900px;}
+            .info-card ul { margin: 0; }
+            .text-card-slide .slide-content { display: flex; flex-direction: column; justify-content: center; height: 100%;}
+            .text-card-slide li { font-size: clamp(1.2rem, 2vw, 1.4rem) !important; line-height: 1.6 !important; }
+
         </style></head><body>
             <div id="slide-container">
-                <section class="slide active"><header><p>Centro Universitário de João Pessoa - UNIPÊ</p><p>Mecanismos de Agressão, Patológicos e de Defesa - 2 | Prof. Rodrigo Niskier</p></header><div class="slide-content"><h3>Análise Epidemiológica de</h3><h1>${selectedInfection}</h1><p style="text-align: center; margin-top: 50px; color: var(--s); font-family: 'Poppins', sans-serif;"><strong>Responsáveis:</strong> ${presentation.authors}</p></div><footer>Slide 1 / 8</footer></section>
-                <section class="slide"><div class="slide-content"><h2>${icons.introduction} Introdução</h2>${info.introduction}</div><footer>Slide 2 / 8</footer></section>
-                <section class="slide"><div class="slide-content"><h2>${icons.medicalImportance} Importância Médica</h2>${info.medicalImportance}</div><footer>Slide 3 / 8</footer></section>
-                <section class="slide"><div class="slide-content"><h2>${icons.data} Dados Analisados</h2><div class="grid-charts">${chartsHTML}</div></div><footer>Slide 4 / 8</footer></section>
-                <section class="slide"><div class="slide-content"><h2>${icons.observations} Observações</h2>${observationsHTML}</div><footer>Slide 5 / 8</footer></section>
-                <section class="slide"><div class="slide-content"><h2>${icons.conclusion} Conclusão</h2>${conclusionHTML}</div><footer>Slide 6 / 8</footer></section>
-                <section class="slide"><div class="slide-content"><h2>${icons.perspective} Perspectivas</h2>${info.clinicalPerspective}</div><footer>Slide 7 / 8</footer></section>
-                <section class="slide"><div class="slide-content"><h3>Agradecimentos</h3><h1>${icons.thanks} Obrigado!</h1></div><footer>Slide 8 / 8</footer></section>
+                <section class="slide active"><header></header><div class="slide-content"><h3>Análise Epidemiológica de</h3><h1>${selectedInfection}</h1><p style="text-align: center; margin-top: 60px; color: var(--s); font-family: 'Poppins', sans-serif; font-size: 1.3em;"><strong>Responsáveis:</strong> ${presentation.authors}</p></div><footer></footer></section>
+                <section class="slide"><header></header><div class="slide-content"><h2>${icons.introduction} Introdução</h2>${info.introduction}</div><footer></footer></section>
+                <section class="slide"><header></header><div class="slide-content"><h2>${icons.medicalImportance} Importância Médica</h2>${info.medicalImportance}</div><footer></footer></section>
+                ${metricsSlidesHTML}
+                ${observationsSlidesHTML}
+                ${conclusionSlidesHTML}
+                <section class="slide"><header></header><div class="slide-content"><h2>${icons.perspective} Perspectivas</h2>${info.clinicalPerspective}</div><footer></footer></section>
+                <section class="slide"><header></header><div class="slide-content"><h3>Agradecimentos</h3><h1>${icons.thanks} Obrigado!</h1></div><footer></footer></section>
             </div>
-            <button id="prevSlide" class="nav-btn">&lt;</button><button id="nextSlide" class="nav-btn">&gt;</button>
+            
             <script>
-                let current = 0; const slides = document.querySelectorAll('.slide'); const total = slides.length;
-                const show = (index) => { slides.forEach((s, i) => s.classList.toggle('active', i === index)); };
-                document.getElementById('nextSlide').addEventListener('click', () => { current = (current + 1) % total; show(current); });
-                document.getElementById('prevSlide').addEventListener('click', () => { current = (current - 1 + total) % total; show(current); });
-                document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') document.getElementById('nextSlide').click(); if (e.key === 'ArrowLeft') document.getElementById('prevSlide').click(); });
+                let current = 0;
+                const slides = document.querySelectorAll('.slide');
+                const total = slides.length;
+                const headers = document.querySelectorAll('header');
+                const footers = document.querySelectorAll('footer');
+
+                const show = (index) => {
+                    slides.forEach((s, i) => s.classList.toggle('active', i === index));
+                    const slideElement = slides[index];
+                    const realIndex = Array.from(slides).indexOf(slideElement) + 1;
+                    
+                    footers.forEach(f => {
+                         const parentSlide = f.closest('.slide');
+                         const parentIndex = Array.from(slides).indexOf(parentSlide) + 1;
+                         f.textContent = 'Slide ' + parentIndex + ' / ' + total;
+                    });
+                    headers.forEach(h => h.innerHTML = '<p>Centro Universitário de João Pessoa - UNIPÊ</p><p>Mecanismos de Agressão, Patológicos e de Defesa - 2 | Prof. Rodrigo Niskier</p>');
+                };
+                
+                document.addEventListener('keydown', (e) => { 
+                    if (e.key === 'ArrowRight') {
+                        current = (current + 1) % total;
+                        show(current);
+                    }
+                    if (e.key === 'ArrowLeft') {
+                        current = (current - 1 + total) % total;
+                        show(current);
+                    }
+                });
+                                
                 show(0);
             <\/script>
         </body></html>`;
@@ -792,7 +823,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (state.currentStep < 4) {
             state.currentStep++;
             if (state.currentStep === 2) renderStep2();
-            if (state.currentStep === 3) { state.chartTypeIndex = 0; renderStep3(); }
+            if (state.currentStep === 3) { renderStep3(); }
             if (state.currentStep === 4) renderStep4();
             updateUI();
         }
